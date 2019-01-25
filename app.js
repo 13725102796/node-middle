@@ -1,13 +1,16 @@
 const Koa = require('koa');
 const app = new Koa();
-const View = require('./view')
+const View = require('./view1')
 
 app.use(async ctx => {
   ctx.type = 'html';
-  ctx.onerror = ()=>{
-    console.log('err111s')
+  // console.log('koa')
+  ctx.onerror = (err)=>{
+    if(err) console.log('err',err)
+    
   }
-  ctx.body = new View(ctx);
+  
+  ctx.body = new View(ctx,'123456');
 
 });
 

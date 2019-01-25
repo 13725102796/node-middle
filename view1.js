@@ -1,57 +1,67 @@
 const Readable = require('stream').Readable;
-var util = require('util');
+// var util = require('util');
 const fs = require('fs');
-var co = require('co');
-var options = [
-  { id: "A", html: "moduleA", delay: 1000 },
-  { id: "B", html: "moduleB", delay: 0 },
-  { id: "C", html: "moduleC", delay: 2000 }
+// var co = require('co');
+var options = [{
+    id: "A",
+    html: "moduleA",
+    delay: 1000
+  },
+  {
+    id: "B",
+    html: "moduleB",
+    delay: 0
+  },
+  {
+    id: "C",
+    html: "moduleC",
+    delay: 2000
+  }
 ];
 
 class View extends Readable {
-  constructor(opt) {
-    super(opt);
+  constructor(ctx,num) {
+    super(ctx);
+    // this.ctx = ctx
+    // console.log(num)
+    this.init(ctx)
+  }
+  init(ctx){
+    this.render1(ctx)
   }
   _opt(item) {
-    // const that = this
-
-    return new Promise((resolve, reject) => {
+    const that = this
+    return new Promise(function (resolve, reject) {
       setTimeout(() => {
-        // if(item.id == 'A') return reject('123456')
-        this.push('<script>renderFlushCon("#' + item.id + '","' + item.html + '");</script>');
-        resolve(item);
+        console.log('执行' + item.id)
+        if (item.id == 'A') return reject('A模块加载失败')
+        that.push('<script>renderFlushCon("#' + item.id + '","' + item.html + '");</script>');
+        return resolve(item);
       }, item.delay);
 
     });
   }
-  async _flushable() {
-
+  async render1(ctx) {
     var layoutHtml = fs.readFileSync(__dirname + "/app/view/layout.html").toString();
     this.push(layoutHtml);
 
     // fetch data and render
 
+    var exec = options.map((item)=>{
+      // 对失败进行处理，让其走成功流程 
+      const promise = this._opt(item).catch((err)=>{
+        // console.log(err)
+        if(err) {ctx.onerror(err)}
+          
+      })
+      return promise
+    });
+    // console.log('promise.all')
+    await Promise.all(exec)
+    this.push('</body></html>');
+    // end the stream
+    this.push(null);
 
-    const opt = (item) => {
-      const that = this
-      return new Promise(function (resolve, reject) {
-        setTimeout(() => {
-          // if(item.id == 'A') return reject('123456')
-          that.push('<script>renderFlushCon("#' + item.id + '","' + item.html + '");</script>');
-          resolve(item);
-        }, item.delay);
-
-      });
-    }
-    var exec = options.map(function (item) { return opt(item); });
-    const flush = async () => {
-      await Promise.all(exec)
-      this.push('</body></html>');
-      // end the stream
-      this.push(null);
-    }
-
-    flush()
 
   }
   _read() {
@@ -59,7 +69,5 @@ class View extends Readable {
   }
 
 }
-co.call(View, this._flushable)
-// util.inherits(View, Readable);
 
 module.exports = View

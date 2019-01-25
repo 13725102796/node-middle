@@ -1,6 +1,5 @@
 var Readable = require('stream').Readable;
 var util = require('util');
-var co = require('co');
 var fs = require('fs');
 
 module.exports = View
@@ -17,12 +16,13 @@ function View(context) {
   Readable.call(this, {});
 
   // render the view on a different loop
-  co.call(this, this.render).catch(context.onerror);
+  this.render(context)
+  // co.call(this, this.render).catch(context.onerror);
 }
 
 View.prototype._read = function () {};
 
-View.prototype.render = function () {
+View.prototype.render = function (ctx) {
   // flush layout and assets
   var layoutHtml = fs.readFileSync(__dirname + "/app/view/layout.html").toString();
   this.push(layoutHtml);
@@ -34,7 +34,7 @@ View.prototype.render = function () {
     const that = this
     return new Promise(function (resolve, reject) {
     setTimeout(()=>{
-      // if(item.id == 'A') return reject('123456')
+      if(item.id == 'A') return ctx.onerror('A模块加载失败')
       that.push('<script>renderFlushCon("#'+item.id+'","'+item.html+'");</script>');
         resolve(item);
       }, item.delay);
