@@ -20,15 +20,13 @@ var options = [{
 ];
 
 class View extends Readable {
-  constructor(ctx,num) {
+  constructor(ctx) {
     super(ctx);
     // this.ctx = ctx
-    // console.log(num)
-    this.init(ctx)
+
+    this.render(ctx)
   }
-  init(ctx){
-    this.render1(ctx)
-  }
+
   _opt(item) {
     const that = this
     return new Promise(function (resolve, reject) {
@@ -41,7 +39,7 @@ class View extends Readable {
 
     });
   }
-  async render1(ctx) {
+  async render(ctx) {
     var layoutHtml = fs.readFileSync(__dirname + "/app/view/layout.html").toString();
     this.push(layoutHtml);
 

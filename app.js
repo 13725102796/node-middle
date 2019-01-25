@@ -10,9 +10,10 @@ app.use(async ctx => {
     
   }
   
-  ctx.body = new View(ctx,'123456');
+  ctx.body = new View(ctx);
 
 });
+
 
 
 app.listen(3000);
