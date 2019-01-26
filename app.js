@@ -1,17 +1,15 @@
 const Koa = require('koa');
 const app = new Koa();
-const View = require('./view1')
+
+
+const router = require('./app/router')
+
+app.use(router.routes())
+   .use(router.allowedMethods())
+
 
 app.use(async ctx => {
-  ctx.type = 'html';
-  // console.log('koa')
-  ctx.onerror = (err)=>{
-    if(err) console.log('err',err)
-    
-  }
   
-  ctx.body = new View(ctx);
-
 });
 
 
