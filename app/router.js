@@ -12,8 +12,8 @@ router
     ctx.onerror = (err)=>{
       if(err) console.log('err',err)
     }
-    
-    ctx.body = new View(ctx);
+    // filePath 当前文件路径
+    ctx.body = new View(ctx,'/app/view/layout.html');
     // ctx.body = "hello index，这是index哦"
   })
 

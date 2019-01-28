@@ -20,10 +20,10 @@ var options = [{
 ];
 
 class View extends Readable {
-  constructor(ctx) {
+  constructor(ctx,filePath) {
     super(ctx);
     // this.ctx = ctx
-
+    this.filePath = filePath
     this.render(ctx)
   }
 
@@ -40,7 +40,7 @@ class View extends Readable {
     });
   }
   async render(ctx) {
-    var layoutHtml = fs.readFileSync(__dirname + "/app/view/layout.html").toString();
+    var layoutHtml = fs.readFileSync(__dirname + this.filePath).toString();
     this.push(layoutHtml);
 
     // fetch data and render
