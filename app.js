@@ -9,7 +9,7 @@ app.use(router.routes())
 
 
 app.use(async ctx => {
-  
+  console.log(ctx)
 });
 
 

@@ -22,7 +22,7 @@ var options = [{
 class View extends Readable {
   // static stateA = false
   constructor(ctx,filePath) {
-    super(ctx);
+    super({objectMode: true});
     // this.ctx = ctx
     this.filePath = filePath
     this.stateA = false
@@ -44,18 +44,19 @@ class View extends Readable {
           // reject('A模块加载失败')
           return
         } 
-        that.push('<script>renderFlushCon("#' + item.id + '","' + item.html + '");</script>');
+        that.push(  item.html );
         return resolve(item);
       }, item.delay);
 
     });
   }
   async render(ctx) {
-    var layoutHtml = fs.readFileSync(__dirname + this.filePath).toString();
-    this.push(layoutHtml);
+    // var layoutHtml = fs.readFileSync(__dirname + this.filePath).toString();
+    
 
     // fetch data and render
-
+    const objStr = '{ streem: '
+    this.push(objStr);
     var exec = options.map((item)=>{
       // 对失败进行处理，让其走成功流程 
       const promise = this._opt(item).catch((err)=>{
@@ -67,10 +68,10 @@ class View extends Readable {
     });
     // console.log('promise.all')
     await Promise.all(exec)
-    this.push('</body></html>');
+    this.push('}');
     // end the stream
     this.push(null);
-    
+    // ctx.status = 200;
 
   }
   _read(){}
